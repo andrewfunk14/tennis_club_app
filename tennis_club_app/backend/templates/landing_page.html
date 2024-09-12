@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to the Coaching Manager{% endblock %}
+
+{% block content %}
+    <h1>Welcome to Coaching Manager</h1>
+    <p>Please log in to manage courts, employees, payments, and reports.</p>
+
+    <!-- Button Container -->
+    <div class="btn-container">
+        <a href="{% url 'login' %}" class="btn">Login to Continue</a>
+    </div>
+{% endblock %}

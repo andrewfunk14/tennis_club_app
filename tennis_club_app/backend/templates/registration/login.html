@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Tennis Club Management{% endblock %}
+
+{% block content %}
+    <div class="login-container">
+        <h1>Login</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn">Login</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

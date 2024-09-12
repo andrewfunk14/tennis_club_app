@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Coaching Manager{% endblock %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    <p>Select a section to manage:</p>
+    
+    <!-- Links to manage sections -->
+    <div class="links">
+        <a href="/api/courts/" class="btn">Manage Courts</a>
+        <a href="/api/employees/" class="btn">Manage Employees</a>
+        <a href="/api/payments/" class="btn">Manage Payments</a>
+        <a href="/api/reports/" class="btn">View Reports</a>
+    </div>
+
+    <!-- Logout button -->
+    <div class="logout-container" style="margin-top: 20px;">
+    <a href="{% url 'logout' %}?next=/" class="btn-logout">Logout</a>
+    </div>
+{% endblock %}

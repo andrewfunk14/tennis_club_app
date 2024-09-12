@@ -1,0 +1,199 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f5;
+    color: #333;
+}
+
+/* Header Styling */
+header {
+    background-color: #3498db;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Main Content Styling */
+main {
+    padding: 20px;
+    text-align: center;
+}
+
+main h1, main p {
+    margin-bottom: 20px; /* Add space between the elements */
+}
+
+main .btn-container {
+    margin-top: 30px; /* Add space above the buttons */
+}
+
+button, .btn {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: inline-block;
+    margin: 10px;
+}
+
+button:hover, .btn:hover {
+    background-color: #2980b9;
+}
+
+/* Footer Styling */
+footer {
+    background-color: #3498db;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+/* Login Form Styling */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h1 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #2c3e50;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+/* Center the button inside the form */
+.form-group button {
+    display: inline-block; /* Keeps button inline */
+    background-color: #3498db;
+    color: white;
+    padding: 12px 30px; /* Modify padding for the button */
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0 auto; /* Ensures the button is centered */
+    text-align: center; /* Center-align text within the button */
+    display: block; /* Ensure it's a block-level element for centering */
+}
+
+/* Optional: Adjust width and text alignment for the parent container */
+.form-group {
+    text-align: center; /* Center-align the contents of the form group */
+    margin-bottom: 20px;
+}
+
+.form-group button:hover {
+    background-color: #2980b9;
+}
+
+/* Position the logout button in the top-right corner */
+.logout-container {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.btn-logout {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b;
+}
+
+/*.btn-social {*/
+/*    display: block;*/
+/*    margin: 10px 0;*/
+/*    padding: 10px;*/
+/*    color: white;*/
+/*    text-align: center;*/
+/*    border-radius: 5px;*/
+/*    text-decoration: none;*/
+/*    font-size: 1rem;*/
+/*}*/
+
+/*.btn-social.google {*/
+/*    background-color: #db4437;*/
+/*}*/
+
+/*.btn-social.facebook {*/
+/*    background-color: #3b5998;*/
+/*}*/
+
+/*.btn-social.apple {*/
+/*    background-color: #333;*/
+/*}*/
+
+/*.btn-social.microsoft {*/
+/*    background-color: #2F2F2F;*/
+/*}*/
+
+/*.btn-social:hover {*/
+/*    opacity: 0.8;*/
+/*}*/

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Event Schedule{% endblock %}
+
+{% block content %}
+<div class="calendar-container">
+    <div id="calendar"></div>
+</div>
+
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modal-title">Add/Edit Event</h2>
+        <form id="eventForm">
+            <input type="text" id="event-title" placeholder="Event Title" required>
+            <input type="date" id="event-start-date" required>
+            <input type="time" id="event-start-time" required>
+            <input type="date" id="event-end-date" required>
+            <input type="time" id="event-end-time" required>
+            <button type="submit" id="saveEventBtn">Save Event</button>
+            <button type="button" id="deleteEventBtn" style="display:none;">Delete Event</button>
+        </form>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+<script src="{% static 'js/court_schedule.js' %}"></script>
+{% endblock %}
