@@ -86,7 +86,6 @@ TEMPLATES = [
 ]
 
 
-
 WSGI_APPLICATION = 'tennis_club_app.wsgi.application'
 
 

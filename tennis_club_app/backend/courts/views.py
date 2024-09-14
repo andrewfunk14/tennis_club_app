@@ -1,50 +1,63 @@
+# views.py
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+from .models import Event
 import json
 from django.utils.dateparse import parse_datetime
-from .models import Event
+from django.views.decorators.http import require_POST
+
 
 def court_schedule_view(request):
     return render(request, 'court_schedule.html')
 
 def court_schedule_events(request):
-    events = list(Event.objects.values('id', 'title', 'start_time', 'end_time'))
+    events = Event.objects.all()
+    events_list = []
     for event in events:
-        event['start'] = event.pop('start_time')
-        event['end'] = event.pop('end_time')
-    return JsonResponse(events, safe=False)
+        events_list.append({
+            'id': event.id,
+            'title': event.title,
+            'start': event.start.isoformat(),
+            'end': event.end.isoformat(),
+        })
+    return JsonResponse(events_list, safe=False)
 
-@csrf_exempt
+
+@csrf_protect
+@require_POST
 def add_event(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            title = data.get('title')
-            start_time = parse_datetime(data.get('start'))
-            end_time = parse_datetime(data.get('end'))
-            event = Event.objects.create(title=title, start_time=start_time, end_time=end_time)
-            return JsonResponse({'status': 'success', 'event_id': event.id}, status=200)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+    data = json.loads(request.body)
+    title = data.get('title')
+    start = parse_datetime(data.get('start'))
+    end = parse_datetime(data.get('end'))
 
-@csrf_exempt
+    # Save the event in the database
+    event = Event.objects.create(title=title, start=start, end=end)
+    return JsonResponse({'status': 'success', 'event_id': event.id})
+
+
+@csrf_protect
+@require_POST
 def edit_event(request, event_id):
-    if request.method == 'POST':
+    try:
+        event = Event.objects.get(id=event_id)
         data = json.loads(request.body)
-        event = get_object_or_404(Event, id=event_id)
         event.title = data.get('title', event.title)
-        event.start_time = parse_datetime(data.get('start', event.start_time.isoformat()))
-        event.end_time = parse_datetime(data.get('end', event.end_time.isoformat()))
+        event.start = parse_datetime(data.get('start'))
+        event.end = parse_datetime(data.get('end'))
         event.save()
-        return JsonResponse({'status': 'success'}, status=200)
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'status': 'success'})
+    except Event.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Event not found'}, status=404)
 
-@csrf_exempt
+
+@csrf_protect
+@require_POST
 def delete_event(request, event_id):
-    if request.method == 'POST':
-        event = get_object_or_404(Event, id=event_id)
+    try:
+        event = Event.objects.get(id=event_id)
         event.delete()
-        return JsonResponse({'status': 'success'}, status=200)
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'status': 'success'})
+    except Event.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Event not found'}, status=404)

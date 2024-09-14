@@ -8,23 +8,87 @@
     <div id="calendar"></div>
 </div>
 
+<!-- Modal for Adding/Editing Events -->
 <div id="eventModal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modal-title">Add/Edit Event</h2>
+        <!-- Move the "x" close button to be inside a positioned div -->
+        <div class="modal-header">
+            <h2 id="modal-title">Add/Edit Event</h2>
+            <span class="close">&times;</span> <!-- Moved inside modal-header for styling -->
+        </div>
         <form id="eventForm">
-            <input type="text" id="event-title" placeholder="Event Title" required>
-            <input type="date" id="event-start-date" required>
-            <input type="time" id="event-start-time" required>
-            <input type="date" id="event-end-date" required>
-            <input type="time" id="event-end-time" required>
-            <button type="submit" id="saveEventBtn">Save Event</button>
-            <button type="button" id="deleteEventBtn" style="display:none;">Delete Event</button>
+            <!-- Remove "Booking Title" label -->
+            <input type="text" id="event-title" placeholder="Enter booking title" required>
+
+            <label for="event-start-date">Start Date</label>
+            <!-- Initialize Flatpickr on these input fields by using class "flatpickr" -->
+            <input type="text" id="event-start-date" class="flatpickr" placeholder="Select Start Date" required>
+
+            <!-- Start Time Group -->
+            <div class="time-group">
+                <label for="start-time">Start Time</label>
+                <div class="time-selectors">
+                    <select id="start-hour" required></select>
+                    <select id="start-minute" required></select>
+                    <select id="start-ampm" required></select>
+                </div>
+            </div>
+
+            <!-- End Date Group -->
+            <label for="event-end-date">End Date</label>
+            <input type="text" id="event-end-date" class="flatpickr" placeholder="Select End Date" required>
+
+            <!-- End Time Group -->
+            <div class="time-group">
+                <label for="end-time">End Time</label>
+                <div class="time-selectors">
+                    <select id="end-hour" required></select>
+                    <select id="end-minute" required></select>
+                    <select id="end-ampm" required></select>
+                </div>
+            </div>
+
+            <button type="submit" id="saveEventBtn">Save Booking</button>
+            <button type="button" id="deleteEventBtn" style="display: none;">Delete Booking</button>
         </form>
     </div>
 </div>
 
+<!-- FullCalendar CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+
+<!-- Include Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Custom CSS (for modal and other custom styles) -->
+<link rel="stylesheet" href="{% static 'css/court_schedule.css' %}">
+
+<!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+
+<!-- Include Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- Custom JS (for handling calendar and modal behavior) -->
 <script src="{% static 'js/court_schedule.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Flatpickr on the date input fields
+        flatpickr("#event-start-date", {
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                // Automatically update end date to match start date if not set
+                if (!document.getElementById("event-end-date").value) {
+                    document.getElementById("event-end-date").value = dateStr;
+                }
+            }
+        });
+
+        flatpickr("#event-end-date", {
+            dateFormat: "Y-m-d"
+        });
+    });
+</script>
+
 {% endblock %}
