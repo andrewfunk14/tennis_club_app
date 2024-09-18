@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Event Schedule{% endblock %}
+{% block title %}Court Schedule{% endblock %}
 
 {% block content %}
 <div class="calendar-container">
@@ -11,43 +11,55 @@
 <!-- Modal for Adding/Editing Events -->
 <div id="eventModal" class="modal">
     <div class="modal-content">
-        <!-- Move the "x" close button to be inside a positioned div -->
+        <!-- Modal Header -->
         <div class="modal-header">
-            <h2 id="modal-title">Add/Edit Event</h2>
-            <span class="close">&times;</span> <!-- Moved inside modal-header for styling -->
+            <h2 id="modal-title">Add/Edit Booking</h2>
+            <span class="close">&times;</span>
         </div>
         <form id="eventForm">
-            <!-- Remove "Booking Title" label -->
+            {% csrf_token %}
+            <!-- Booking Title Input Field (without label) -->
             <input type="text" id="event-title" placeholder="Enter booking title" required>
 
-            <label for="event-start-date">Start Date</label>
-            <!-- Initialize Flatpickr on these input fields by using class "flatpickr" -->
-            <input type="text" id="event-start-date" class="flatpickr" placeholder="Select Start Date" required>
+            <!-- Event Type Selection -->
+            <label for="event-type">Event Type</label>
+            <select id="event-type" name="event-type" required>
+                <option value="">Select an event type</option>
+                <option value="group">Group Lesson</option>
+                <option value="private">Private Lesson</option>
+                <option value="camp">Camp</option>
+                <option value="tournament">Tournament</option>
+                <option value="social">Social</option>
+                <option value="matchplay">Matchplay</option>
+                <option value="other">Other</option>
+                <!-- Add more options as defined in EVENT_TYPE_CHOICES -->
+            </select>
 
-            <!-- Start Time Group -->
-            <div class="time-group">
-                <label for="start-time">Start Time</label>
-                <div class="time-selectors">
-                    <select id="start-hour" required></select>
-                    <select id="start-minute" required></select>
-                    <select id="start-ampm" required></select>
-                </div>
+            <!-- Start Time -->
+            <label for="event-start-date">Start Time</label>
+            <!-- Start Date -->
+            <input type="text" id="event-start-date" required>
+
+            <!-- Start Time Selectors -->
+            <div class="time-selectors">
+                <select id="start-hour" required></select> :
+                <select id="start-minute" required></select>
+                <select id="start-ampm" required></select>
             </div>
 
-            <!-- End Date Group -->
-            <label for="event-end-date">End Date</label>
-            <input type="text" id="event-end-date" class="flatpickr" placeholder="Select End Date" required>
+            <!-- End Time -->
+            <label for="event-end-date">End Time</label>
+            <!-- End Date -->
+            <input type="text" id="event-end-date" required>
 
-            <!-- End Time Group -->
-            <div class="time-group">
-                <label for="end-time">End Time</label>
-                <div class="time-selectors">
-                    <select id="end-hour" required></select>
-                    <select id="end-minute" required></select>
-                    <select id="end-ampm" required></select>
-                </div>
+            <!-- End Time Selectors -->
+            <div class="time-selectors">
+                <select id="end-hour" required></select> :
+                <select id="end-minute" required></select>
+                <select id="end-ampm" required></select>
             </div>
 
+            <!-- Buttons -->
             <button type="submit" id="saveEventBtn">Save Booking</button>
             <button type="button" id="deleteEventBtn" style="display: none;">Delete Booking</button>
         </form>
@@ -57,38 +69,22 @@
 <!-- FullCalendar CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
 
-<!-- Include Flatpickr CSS -->
+<!-- Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-<!-- Custom CSS (for modal and other custom styles) -->
+<!-- Custom CSS -->
 <link rel="stylesheet" href="{% static 'css/court_schedule.css' %}">
 
 <!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 
-<!-- Include Flatpickr JS -->
+<!-- Flatpickr JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<!-- Custom JS (for handling calendar and modal behavior) -->
+<!-- Include chroma.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chroma-js@2.1.0/chroma.min.js"></script>
+
+<!-- Custom JS -->
 <script src="{% static 'js/court_schedule.js' %}"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Flatpickr on the date input fields
-        flatpickr("#event-start-date", {
-            dateFormat: "Y-m-d",
-            onChange: function(selectedDates, dateStr, instance) {
-                // Automatically update end date to match start date if not set
-                if (!document.getElementById("event-end-date").value) {
-                    document.getElementById("event-end-date").value = dateStr;
-                }
-            }
-        });
-
-        flatpickr("#event-end-date", {
-            dateFormat: "Y-m-d"
-        });
-    });
-</script>
 
 {% endblock %}

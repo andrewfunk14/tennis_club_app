@@ -1,15 +1,26 @@
 from django.urls import path, include
+from django.contrib import admin
 from .views import landing_page_view, dashboard_view, custom_logout_view
 
 urlpatterns = [
-    path('', landing_page_view, name='landing-page'),  # Landing page URL
-    path('dashboard/', dashboard_view, name='dashboard'),  # Dashboard URL
-    path('accounts/logout/', custom_logout_view, name='logout'),  # Use custom logout view
-    path('accounts/', include('django.contrib.auth.urls')),  # Other built-in auth URLs
+    # Landing and Dashboard
+    path('', landing_page_view, name='landing_page'),  # Make sure to use 'landing_page' here to match the error message
+
+    # Dashboard
+    path('dashboard/', dashboard_view, name='dashboard'),
+
+    # Authentication URLs
+    path('accounts/logout/', custom_logout_view, name='logout'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    # Uncomment the following line if using allauth
     # path('accounts/', include('allauth.urls')),
-    # Other app URLs
-    path('api/courts/', include('courts.urls')),
-    path('api/employees/', include('employees.urls')),
-    path('api/payments/', include('payments.urls')),
-    path('api/reports/', include('reports.urls')),
+
+    # App URLs - Ensure each app has 'app_name' defined in their urls.py
+    path('api/courts/', include(('courts.urls', 'courts'), namespace='courts')),
+    path('api/employees/', include(('employees.urls', 'employees'), namespace='employees')),
+    path('api/payments/', include(('payments.urls', 'payments'), namespace='payments')),
+    path('api/reports/', include(('reports.urls', 'reports'), namespace='reports')),
+
+    # Admin Site
+    path('admin/', admin.site.urls),
 ]

@@ -1,3 +1,5 @@
+/* court_schedule.css */
+
 /* Global Reset */
 * {
     margin: 0;
@@ -10,11 +12,14 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f5;
     color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Header Styling */
 header {
-    background-color: #3498db;
+    background-color: #2e8b57; /* Changed from light blue to darker green */
     padding: 10px 0;
     text-align: center;
 }
@@ -40,155 +45,59 @@ nav ul li a:hover {
 
 /* Main Content Styling */
 main {
+    flex: 1;
     padding: 20px;
     text-align: center;
 }
 
-main h1, main p {
-    margin-bottom: 20px; /* Add space between the elements */
+main h1,
+main p {
+    margin-bottom: 20px;
 }
 
 main .btn-container {
-    margin-top: 30px; /* Add space above the buttons */
+    margin-top: 30px;
 }
 
-button, .btn {
-    background-color: #3498db;
+button,
+.btn {
+    background-color: #2e8b57; /* Changed from light blue to darker green */
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1rem;
-    display: inline-block;
     margin: 10px;
 }
 
-button:hover, .btn:hover {
-    background-color: #2980b9;
+button:hover,
+.btn:hover {
+    background-color: #006400; /* Changed hover color to a darker green */
 }
 
 /* Footer Styling */
 footer {
-    background-color: #3498db;
+    background-color: #2e8b57; /* Changed from light blue to darker green */
     color: white;
     text-align: center;
     padding: 10px 0;
-    position: fixed;
     width: 100%;
+    position: relative;
     bottom: 0;
 }
 
-/* Login Form Styling */
-.login-container {
-    max-width: 400px;
+/* Calendar Container */
+.calendar-container {
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.login-container h1 {
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: #2c3e50;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 1.1rem;
-    color: #333;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #3498db;
-}
-
-/* Center the button inside the form */
-.form-group button {
-    display: inline-block; /* Keeps button inline */
-    background-color: #3498db;
-    color: white;
-    padding: 12px 30px; /* Modify padding for the button */
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 0 auto; /* Ensures the button is centered */
-    text-align: center; /* Center-align text within the button */
-    display: block; /* Ensure it's a block-level element for centering */
-}
-
-/* Optional: Adjust width and text alignment for the parent container */
-.form-group {
-    text-align: center; /* Center-align the contents of the form group */
-    margin-bottom: 20px;
-}
-
-.form-group button:hover {
-    background-color: #2980b9;
-}
-
-/* Position the logout button in the top-right corner */
-.logout-container {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-}
-
-.btn-logout {
-    background-color: #e74c3c;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-    display: inline-block;
-}
-
-.btn-logout:hover {
-    background-color: #c0392b;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-}
-
-.container {
-    height: 100%;  /* Ensure the container takes up full height */
-    width: 100%;   /* Full width */
-    display: flex;
-    flex-direction: column;
+    padding: 20px;
 }
 
 #calendar {
-    flex-grow: 1;  /* Allow the calendar to grow and take remaining space */
     width: 100%;
-    height: 100%;  /* Make sure calendar takes full height */
-    position: relative;  /* Keep the calendar positioned in the document flow */
-    z-index: 1;  /* Calendar should be behind modal */
+    margin: 0 auto;
 }
 
 .fc-toolbar {
@@ -220,7 +129,8 @@ html, body {
     background-color: #95a5a6;
 }
 
-.fc-prev-button, .fc-next-button {
+.fc-prev-button,
+.fc-next-button {
     padding: 6px 12px;
     font-size: 16px;
 }
@@ -234,51 +144,47 @@ html, body {
 /* Modal styles */
 .modal {
     display: none;
-    position: fixed;  /* Make sure the modal is fixed to the screen */
-    z-index: 9999;  /* Higher z-index to ensure it is above the calendar */
+    position: fixed;
+    z-index: 9999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
     background-color: #fff;
     margin: 5% auto;
-    padding: 20px;
+    padding: 20px 30px;
     border: none;
-    width: 80%; /* Adjust this value to make the modal less wide */
-    max-width: 400px; /* Set a max-width to ensure it doesn't get too wide */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     position: relative;
 }
 
-/* Modal Header Styling */
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-/* Close button styling */
-.modal-content .close {
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #333;
+}
+
+.modal-header .close {
     font-size: 1.5rem;
     cursor: pointer;
     background: none;
     border: none;
     outline: none;
-}
-
-
-.modal-content h2 {
-    margin-top: 0;
-    font-size: 1.5em;
-    text-align: center;
-    color: #333;
 }
 
 .modal-content form {
@@ -291,11 +197,18 @@ html, body {
 .modal-content select {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 8px 0;
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em;
+}
+
+.modal-content label {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #333;
+    text-align: left;
 }
 
 .modal-content .time-group {
@@ -304,53 +217,166 @@ html, body {
 
 .modal-content .time-selectors {
     display: flex;
-    justify-content: space-between; /* Ensure selectors are spaced evenly */
-    gap: 10px; /* Add space between time selectors */
+    justify-content: space-between;
+    gap: 10px;
 }
 
 .modal-content .time-selectors select {
-    width: 32%; /* Ensure each selector fits within the parent */
+    width: 32%;
     padding: 8px;
     font-size: 1em;
 }
 
 .modal-content button {
-    padding: 10px;
-    margin-top: 10px;
+    padding: 12px;
+    margin-top: 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.1em;
 }
 
-.modal-content button#saveEventBtn {
-    background-color: #3498db;
+#saveEventBtn {
+    background-color: #2e8b57; /* Changed from light blue to darker green */
     color: white;
 }
 
-.modal-content button#saveEventBtn:hover {
-    background-color: #2980b9;
+#saveEventBtn:hover {
+    background-color: #006400; /* Changed hover color to a darker green */
 }
 
-.modal-content button#deleteEventBtn {
+#deleteEventBtn {
     background-color: #e74c3c;
     color: white;
 }
 
-.modal-content button#deleteEventBtn:hover {
+#deleteEventBtn:hover {
     background-color: #c0392b;
 }
 
+/* Login Form Styling */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-/* Ensure footer sticks to the bottom of the page */
-footer {
+.login-container h1 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #2c3e50;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.form-group input {
     width: 100%;
-    background-color: #3498db;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2e8b57; /* Changed from light blue to darker green */
+}
+
+.form-group button {
+    width: 100%;
+    background-color: #2e8b57; /* Changed from light blue to darker green */
     color: white;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;  /* Use fixed positioning for the footer */
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.form-group button:hover {
+    background-color: #006400; /* Changed hover color to a darker green */
+}
+
+/* Logout Button Styling */
+.logout-container {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.btn-logout {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b;
+}
+
+/* Footer Positioning */
+footer {
+    position: relative;
     bottom: 0;
-    z-index: 1;  /* Keep footer beneath the modal */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 20px;
+    }
+
+    .fc-toolbar-title {
+        font-size: 20px;
+    }
+
+    .fc-button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.5em;
+    }
+
+    .modal-content button {
+        font-size: 1em;
+    }
+}
+
+/* Style for error messages */
+.error-message {
+    color: #e74c3c;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+/* Remove default validation outline */
+input:focus,
+input:invalid,
+input:valid {
+    outline: none; /* Removes the default outline */
+    box-shadow: none; /* Removes any box shadow that might be applied */
+    border-color: initial; /* Reset the border color */
 }
 

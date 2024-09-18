@@ -6,6 +6,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteBtn = document.getElementById('deleteEventBtn');
     const closeModalBtn = modal.querySelector('.close');
     let currentEvent = null;
+    let startDatePicker;
+    let endDatePicker;
+
+    // Define the base URL to match the backend
+    const EVENTS_BASE_URL = '/api/courts/events/';
+
+    // Define a mapping of event types to specific colors
+    const eventTypeColors = {
+        'group': '#007bff', // Default Bootstrap Blue
+        'private': '#2e8b57', // Green
+        'camp': '#EDC948', // Yellow
+        'tournament': '#76B7B2', // Teal
+        'social': '#F28E2B', // Orange
+        'matchplay': '#E15759', // Red
+        'other': '#B07AA1'  // Purple
+    };
 
     // Populate time options on page load
     populateTimeOptions('start');
@@ -14,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize FullCalendar
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        timeZone: 'local', // Use 'local' to display times in the user's local time zone
+        timeZone: 'local',
         headerToolbar: {
             left: 'today prev,next',
             center: 'title',
@@ -22,48 +38,114 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         selectable: true,
         editable: true,
-        events: '/api/courts/schedule/', // Fetch events from the server
+        events: EVENTS_BASE_URL,
+
+        eventDidMount: function (info) {
+            // Use the eventTypeColors mapping to set the color
+            const eventType = info.event.extendedProps.eventType;
+            const color = eventTypeColors[eventType] || '#888'; // Default color if event type not found
+            info.el.style.backgroundColor = color;
+            info.el.style.borderColor = color;
+        },
+
         select: function (info) {
             currentEvent = null;
-            openModal('Add Booking', info.startStr, info.endStr);
+            openModal('Add Booking', info.start, info.end);
         },
         eventClick: function (info) {
             currentEvent = info.event;
-            openModal('Edit Booking', info.event.startStr, info.event.endStr, info.event.title);
+            openModal(
+                'Edit Booking',
+                info.event.start,
+                info.event.end,
+                info.event.title,
+                info.event.extendedProps.eventType // Pass eventType when editing
+            );
+        },
+        eventDrop: function (info) {
+            // Handle event drag-and-drop
+            updateEventData(info.event);
+        },
+        eventResize: function (info) {
+            // Handle event resize
+            updateEventData(info.event);
         }
     });
 
+
     calendar.render();
 
+
+    // Initialize Flatpickr on the date input fields
+    startDatePicker = flatpickr("#event-start-date", {
+        dateFormat: "l, F j, Y", // Format: "Tuesday, September 17, 2024"
+    });
+
+    endDatePicker = flatpickr("#event-end-date", {
+        dateFormat: "l, F j, Y",
+    });
+
     // Function to open the modal
-    function openModal(title, start, end, eventTitle = '') {
+    function openModal(title, start = null, end = null, eventTitle = '', eventType = '') {
         document.getElementById("modal-title").textContent = title;
         document.getElementById("event-title").value = eventTitle;
 
-        // Convert the UTC times to local times
-        const startDateTime = new Date(start);
-        const endDateTime = new Date(end);
+        // Set the event type if provided
+        const eventTypeSelect = document.getElementById('event-type');
+        if (eventTypeSelect) {
+            eventTypeSelect.value = eventType || '';
+        }
 
-        // Set the date fields using the local date
-        document.getElementById("event-start-date").value = startDateTime.toLocaleDateString('en-CA'); // 'en-CA' ensures YYYY-MM-DD format
-        document.getElementById("event-end-date").value = endDateTime.toLocaleDateString('en-CA');
+        let startDateTime, endDateTime;
+
+        if (start && end) {
+            // Use provided start and end times
+            startDateTime = new Date(start);
+            endDateTime = new Date(end);
+
+            // Check if times are all-day (midnight)
+            if (startDateTime.getHours() === 0 && startDateTime.getMinutes() === 0 && endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
+                // Adjust start time
+                const now = new Date();
+                if (startDateTime.toDateString() === now.toDateString()) {
+                    // If selected date is today, set start time to now rounded up to next 15 minutes
+                    const minutes = 15 * Math.ceil(now.getMinutes() / 15);
+                    startDateTime.setHours(now.getHours(), minutes, 0, 0);
+                } else {
+                    // Set start time to 9 AM on the selected date
+                    startDateTime.setHours(9, 0, 0, 0);
+                }
+                // Set end time to one hour after start time
+                endDateTime = new Date(startDateTime.getTime() + (60 * 60 * 1000));
+            }
+        } else {
+            // Set default start time to now, rounded up to the next 15 minutes
+            startDateTime = new Date();
+            const minutes = 15 * Math.ceil(startDateTime.getMinutes() / 15);
+            startDateTime.setMinutes(minutes);
+            startDateTime.setSeconds(0);
+
+            // Set default end time to one hour after start time
+            endDateTime = new Date(startDateTime.getTime() + (60 * 60 * 1000));
+        }
+
+        // Set the date fields using Flatpickr
+        startDatePicker.setDate(startDateTime, true);
+        endDatePicker.setDate(endDateTime, true);
 
         // Populate the time selectors with local time values
         setTimeSelectors('start', startDateTime);
         setTimeSelectors('end', endDateTime);
 
-        deleteBtn.style.display = currentEvent ? "block" : "none"; // Show delete button only for editing
+        deleteBtn.style.display = currentEvent ? "inline-block" : "none"; // Show delete button only when editing
         modal.style.display = "block";
     }
 
-    // Modify the setTimeSelectors function to take a Date object and convert it to local time
     function setTimeSelectors(prefix, dateObj) {
-        const hours24 = dateObj.getHours(); // Use local hours
-        const minutes = dateObj.getMinutes(); // Use local minutes
+        const hours24 = dateObj.getHours();
+        const minutes = dateObj.getMinutes();
         const ampm = hours24 >= 12 ? 'PM' : 'AM';
-        const hours12 = hours24 % 12 || 12; // Convert 24-hour to 12-hour format
-
-        document.getElementById(`${prefix}-hour`).value = hours12;
+        document.getElementById(`${prefix}-hour`).value = hours24 % 12 || 12;
         document.getElementById(`${prefix}-minute`).value = String(minutes).padStart(2, '0');
         document.getElementById(`${prefix}-ampm`).value = ampm;
     }
@@ -74,19 +156,38 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.target === modal) {
             closeModal();
         }
-    }
+    };
 
-    // Function to close the modal
     function closeModal() {
         modal.style.display = "none";
+        form.reset();
+        startDatePicker.clear();
+        endDatePicker.clear();
     }
 
     // Form submission for adding/editing events
     form.onsubmit = function (e) {
         e.preventDefault();
-        const eventTitle = document.getElementById('event-title').value;
-        const eventStartDate = document.getElementById('event-start-date').value;
-        const eventEndDate = document.getElementById('event-end-date').value;
+        const eventTitle = document.getElementById('event-title').value.trim();
+        const eventType = document.getElementById('event-type').value;
+
+        if (!eventTitle) {
+            alert('Please enter a booking title.');
+            return;
+        }
+
+        if (!eventType) {
+            alert('Please select an event type.');
+            return;
+        }
+
+        const startDate = startDatePicker.selectedDates[0];
+        const endDate = endDatePicker.selectedDates[0];
+
+        if (!startDate || !endDate) {
+            alert('Please select start and end dates.');
+            return;
+        }
 
         const eventStartTime = getTimeIn24HourFormat(
             document.getElementById('start-hour').value,
@@ -101,57 +202,84 @@ document.addEventListener('DOMContentLoaded', function () {
         );
 
         // Combine date and time to create a local datetime string
-        const localStartDateTimeString = `${eventStartDate}T${eventStartTime}:00`;
-        const localEndDateTimeString = `${eventEndDate}T${eventEndTime}:00`;
+        const localStartDateTimeString = `${formatDate(startDate)}T${eventStartTime}:00`;
+        const localEndDateTimeString = `${formatDate(endDate)}T${eventEndTime}:00`;
 
         // Create local Date objects
         const localStartDateTime = new Date(localStartDateTimeString);
         const localEndDateTime = new Date(localEndDateTimeString);
 
-        // Convert local Date objects to UTC ISO strings
-        const startDateTimeUTC = localStartDateTime.toISOString(); // Automatically converted to UTC
-        const endDateTimeUTC = localEndDateTime.toISOString(); // Automatically converted to UTC
+        // Validate that end time is after start time
+        if (localEndDateTime <= localStartDateTime) {
+            alert('End time must be after start time.');
+            return;
+        }
+
+        // Convert local Date objects to ISO strings
+        const startDateTimeISO = localStartDateTime.toISOString();
+        const endDateTimeISO = localEndDateTime.toISOString();
 
         const eventData = {
             title: eventTitle,
-            start: startDateTimeUTC, // Use UTC datetime
-            end: endDateTimeUTC // Use UTC datetime
+            event_type: eventType, // Include event_type in the data sent to the server
+            start: startDateTimeISO,
+            end: endDateTimeISO
         };
 
-        const url = currentEvent ? `/api/courts/edit/${currentEvent.id}/` : '/api/courts/add/';
+        const url = currentEvent ? `${EVENTS_BASE_URL}edit/${currentEvent.id}/` : `${EVENTS_BASE_URL}add/`;
+        const method = currentEvent ? 'PATCH' : 'POST';
+
         fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
             body: JSON.stringify(eventData)
-        }).then(response => response.json()).then(data => {
-            if (data.status === 'success') {
-                if (currentEvent) {
-                    currentEvent.remove();
-                    calendar.addEvent({ ...eventData, id: currentEvent.id });
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                if (result.status === 201 || result.body.status === 'success') {
+                    calendar.refetchEvents();
+                    closeModal();
                 } else {
-                    calendar.addEvent({ ...eventData, id: data.event_id });
+                    alert(result.body.message || 'An error occurred while saving the event.');
                 }
-                closeModal();
-            }
-        });
-    }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving the event.');
+            });
+    };
 
     // Delete event
     deleteBtn.onclick = function () {
         if (currentEvent) {
-            fetch(`/api/courts/delete/${currentEvent.id}/`, {
-                method: 'POST',
+            if (!confirm('Are you sure you want to delete this booking?')) {
+                return;
+            }
+            fetch(`${EVENTS_BASE_URL}delete/${currentEvent.id}/`, {
+                method: 'DELETE',
                 headers: {
-                    'X-CSRFToken': getCookie('csrftoken') // Include the CSRF token in headers
+                    'X-CSRFToken': getCookie('csrftoken')
                 }
-            }).then(response => response.json()).then(data => {
-                if (data.status === 'success') {
-                    currentEvent.remove();
-                    closeModal();
-                }
-            });
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        calendar.refetchEvents();
+                        closeModal();
+                    } else {
+                        return response.json().then(data => {
+                            alert(data.message || 'An error occurred while deleting the event.');
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the event.');
+                });
         }
-    }
+    };
 
     // Helper Functions
     function populateTimeOptions(prefix) {
@@ -159,7 +287,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const minuteSelect = document.getElementById(`${prefix}-minute`);
         const ampmSelect = document.getElementById(`${prefix}-ampm`);
 
-        // Populate hours
+        // Clear existing options if any
+        hourSelect.innerHTML = '';
+        minuteSelect.innerHTML = '';
+        ampmSelect.innerHTML = '';
+
+        // Populate hours (1 to 12)
         for (let i = 1; i <= 12; i++) {
             const option = document.createElement('option');
             option.value = i;
@@ -167,16 +300,13 @@ document.addEventListener('DOMContentLoaded', function () {
             hourSelect.appendChild(option);
         }
 
-        // Populate minutes
+        // Populate minutes (00, 15, 30, 45)
         for (let i = 0; i < 60; i += 15) {
             const option = document.createElement('option');
             option.value = String(i).padStart(2, '0');
             option.text = String(i).padStart(2, '0');
             minuteSelect.appendChild(option);
         }
-
-        // Set default minute value to "00"
-        minuteSelect.value = "00";
 
         // Populate AM/PM
         ['AM', 'PM'].forEach(ampm => {
@@ -194,23 +324,56 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     }
 
-    function convert24HourTo12Hour(hour) {
-        hour = parseInt(hour);
-        return hour % 12 === 0 ? 12 : hour % 12;
+    function formatDate(dateObj) {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            for (const cookie of cookies) {
+                const trimmedCookie = cookie.trim();
+                if (trimmedCookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(trimmedCookie.substring(name.length + 1));
                     break;
                 }
             }
         }
         return cookieValue;
+    }
+
+    // Update event data after drag-and-drop or resize
+    function updateEventData(event) {
+        const eventData = {
+            title: event.title, // Use the existing title
+            event_type: event.extendedProps.eventType, // Include event_type
+            start: event.start.toISOString(),
+            end: event.end ? event.end.toISOString() : null
+        };
+
+        fetch(`${EVENTS_BASE_URL}edit/${event.id}/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(eventData)
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                if (result.body.status !== 'success') {
+                    alert(result.body.message || 'An error occurred while updating the event.');
+                    calendar.refetchEvents(); // Revert changes on error
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the event.');
+                calendar.refetchEvents(); // Revert changes on error
+            });
     }
 });
